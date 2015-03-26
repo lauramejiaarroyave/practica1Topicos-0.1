@@ -1,0 +1,115 @@
+xquery version "3.0";
+declare option exist:serialize "method=html media-type=text/html";
+
+
+import module namespace ubl="urn:ubl:utils" at "xmldb:exist:///db/apps/practica1Topicos/ubl-utils.xqm";
+(: Obtiene el valor de un parametro pasado en la URL :)
+
+let $forFix := request:get-parameter('word', '')
+let $lang := request:get-parameter('lang', 'Ingles')
+
+let $opc := request:get-parameter('opc', '')
+
+let $fixed := ubl:fix-name($forFix)
+
+let $nombre := concat("/db/topicos/ubl-idd/UBL-IDD-2.1-", $lang ,".xml")
+
+
+let $ddl :=
+
+if ($opc = "ublname") then
+    
+ (
+            
+    for $p in doc($nombre)/idd/section[ @xml:id  = $fixed]/entry
+    
+                    
+    return
+    <tr>   
+                
+        <td><h4><p class="text-warning">{$p/ubl-name/text()}</p></h4></td>
+                    
+        <td>{$p/business-terms/text()}</td>
+                    
+        <td>{$p/definition/text()}</td>
+        
+    </tr> 
+
+            
+ )
+
+else
+ if ($opc = "business") then
+    
+ (
+            
+   for $p in doc($nombre)/idd/section/entry[business-terms = ubl:fix-espacios($forFix)]
+   
+    return
+               
+    <tr>   
+        <td><h4><a href="fatherBusinessTerm.html?doc={$fixed}">{$p/./section/@xml:id/text()} </a></h4></td>
+        
+        <td><h4><a href="fatherBusinessTerm.html?word={$p/ubl-name/text()}">{$p/ubl-name/text()} </a></h4></td>
+        
+        <td>{$p/business-terms/text()}</td>
+                    
+        <td>{$p/definition/text()}</td>
+    </tr> 
+
+    
+   (: doc($nombre)/idd/section/entry[business-terms = $fixed, ancestor-or-self::entry]:)
+    
+            
+ )
+ else()
+
+
+
+
+let $tabla :=
+
+            <table class="table">
+                    <th><h3><p class="text-success">Section</p></h3></th>
+                    <th><h3><p class="text-success">UBLName</p></h3></th>
+                    <th><h3><p class="text-success">Term</p></h3></th>
+                    { $ddl } 
+                         
+            </table>
+
+
+return
+
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="row">
+        <div class="col-md-7 col-md-offset-2">
+            <div class="page-header">
+                <h2>Functional Specifications - IDD Practice</h2>
+            </div>
+            <div class="alert alert-success"/>
+
+            
+             <h3><u><p class="text-info col-md-offset-5">Search</p></u></h3>               
+            <form action="ubl-search.html" method="GET" >
+            
+                <div class="col-md-offset-2">
+                    Enter any word: <input name="word" />
+
+                    <select name="opc" id="opc" class="dropdown">
+                      <option value="">Please select a Type Search</option>
+                      <option value="ublname">UBLName</option>
+                      <option value="business">Business Term</option>
+                    </select> 
+                
+                    <input type="submit"  class="btn btn-info" value="Go!"  />
+                </div>
+            </form>
+             <br/>
+                 <h3><u><p class="text-info"> { $forFix }</p></u></h3>
+            <br/>
+
+            
+            { $tabla }
+        </div>
+    </div>
+</div>

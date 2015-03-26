@@ -1,0 +1,72 @@
+xquery version "3.0";
+
+declare option exist:serialize "method=html media-type=text/html";
+
+import module namespace ubl="urn:ubl:utils" at "xmldb:exist:///db/apps/practica1Topicos/ubl-utils.xqm";
+
+let $forFix := request:get-parameter('doc', 'Order')
+let $lang := request:get-parameter('lang', 'Ingles')
+
+let $fixed := ubl:fix-name($forFix)
+
+
+let $nombre := concat("/db/topicos/ubl-idd/UBL-IDD-2.1-", $lang ,".xml")
+
+
+let $nombre2 := doc($nombre)/idd/section[ @xml:id  = $fixed]/entry
+
+let $filas := for $p in $nombre2
+return 
+<tr>   
+
+    <td><h4><p class="text-warning">{$p/ubl-name/text()}</p></h4></td>
+    
+    <td>{$p/business-terms/text()}</td>
+    
+    <td>{$p/definition/text()}</td>
+</tr>
+
+let $tabla := 
+            <table class="table">
+                    <th><h3><p class="text-success">UBLName</p></h3></th>
+                    <th><h3><p class="text-success">Term</p></h3></th>
+                    <th><h3><p class="text-success">Definition</p></h3></th>
+                    { $filas } 
+                         
+            </table>
+
+return 
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="row">
+        <div class="col-md-7 col-md-offset-2">
+            <div class="page-header">
+                <h2>Functional Specifications - IDD Practice</h2>
+            </div>
+            <div class="alert alert-success"/>
+
+            
+        <form action= "idd.html" method="GET" >
+               <input id="doc" name="doc" type="hidden"  value="{$forFix}"></input>
+               
+               <div class="col-md-offset-4">
+                    <select name="lang" id="lang" class="dropdown">
+                      <option value="">Please select a Language</option>
+                      <option value="DE">Deutsch</option>
+                      <option value="ES">Español</option>
+                      <option value="Ingles">English</option>
+                      <option value="IT">Italiano</option>
+                      <option value="NL">Nederlands</option>
+                      <option value="ZH-CN">Chinese Simplified</option>
+                      <option value="ZH-TW">Taiwanese Mandarin</option>
+                    </select> 
+                      <input type="submit"  class="btn btn-info" value="Change"/>
+                  </div>
+        </form>
+                <h3><u><p class="text-info"> { $forFix }</p></u></h3>
+
+          <br/> 
+         { $tabla }
+        
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+xquery version "3.0";
+
+declare option exist:serialize "method=html media-type=text/html";
+import module namespace ubl="urn:ubl:utils" at "xmldb:exist:///db/apps/practica1Topicos/ubl-utils.xqm";
+
+(: Obtener la lista de todos los docmentos UBL con su proceso :)
+let $list := ubl:process-list()
+
+let $body := for $p in $list
+return <div>
+
+<tr> 
+    <td>
+    <h4><p class="text-warning">{$p/name/text()}</p></h4>
+    </td>
+
+{
+    for $d in $p/doc-name
+    return <tr><td></td>
+        <td>
+            
+            <a href="idd.html?doc={ubl:fix-espacios($d/text())}">{ $d/text() }</a>
+            
+        </td> </tr>
+}
+</tr>
+<td><h3> </h3></td>
+</div>
+
+
+return
+    
+<div xmlns="http://www.w3.org/1999/xhtml" data-template="templates:surround" data-template-with="templates/page.html" data-template-at="content">
+    <div class="row">
+        <div class="col-md-7 col-md-offset-2">
+            <div class="page-header">
+                <h2>Functional Specifications - IDD Practice</h2>
+            </div>
+            <div class="alert alert-success"/>
+
+            
+            <table  class="table">
+                <tr>
+                    <td><h3><p class="text-success">NAME PROCESS</p></h3></td>
+                    <td><h3><p class="text-success">PROCESS'S DOCUMENTS</p></h3></td>
+                </tr>
+                
+                 {$body}
+        
+            </table>
+        </div>
+    </div>
+</div>

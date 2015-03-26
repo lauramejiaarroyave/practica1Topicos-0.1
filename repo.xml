@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta xmlns="http://exist-db.org/xquery/repo">
+    <description>Practica 1 APP</description>
+    <author/>
+    <author>Laura Mejia Arroyave</author>
+    <website/>
+    <status>alpha</status>
+    <license>GNU-LGPL</license>
+    <copyright>true</copyright>
+    <type>application</type>
+    <target>practica1Topicos</target>
+    <prepare>pre-install.xql</prepare>
+    <finish/>
+    <deployed>2015-03-26T07:40:45.523-05:00</deployed>
+</meta>
